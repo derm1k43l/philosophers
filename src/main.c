@@ -6,7 +6,7 @@
 /*   By: mrusu <mrusu@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/13 10:24:31 by mrusu             #+#    #+#             */
-/*   Updated: 2024/06/13 10:32:37 by mrusu            ###   ########.fr       */
+/*   Updated: 2024/06/13 10:32:55 by mrusu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,3 +39,26 @@ void	*monitoring_dinner(void *data)
 	return (NULL);
 }
 
+void leaks()
+{
+	system("leaks philo");
+}
+
+int	main(int ac, char *av[])
+{
+	t_simulation	simulation;
+
+	if (ac == 5 || ac == 6)
+	{
+		input_check(&simulation, av);
+		data_init(&simulation);
+		start_simulation(&simulation);
+		clean(&simulation);
+	}
+	else
+	{
+		error_exit(R "Usage ./philo 5 800 200 200" DEF);
+	}
+	// atexit(leaks);
+	return (0);
+}
