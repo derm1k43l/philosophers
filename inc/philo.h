@@ -6,7 +6,7 @@
 /*   By: mrusu <mrusu@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/13 09:47:35 by mrusu             #+#    #+#             */
-/*   Updated: 2024/06/13 10:58:46 by mrusu            ###   ########.fr       */
+/*   Updated: 2024/06/14 13:39:01 by mrusu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,13 +61,13 @@ typedef enum e_time
 // Strucutre for simulation enviroment
 typedef struct s_simulation
 {
-	long		philo_nbr;
+	uint8_t		philo_nbr;
 	long		time_to_eat;
 	long		time_to_sleep;
 	long		time_to_die;
 	long		limit_meals;
 	long		start_time;
-	long		threads_running_nbr;
+	uint8_t		threads_running_nbr;
 	bool		simulation_running;
 	bool		sync_ready;
 	t_mtx		sim_mutex;
@@ -80,9 +80,9 @@ typedef struct s_simulation
 // Strucutre for Philosophers atributes
 typedef struct s_philo
 {
-	long			id;
+	uint8_t			id;
 	long			last_meal_time;
-	long			meals_index;
+	int				meals_index;
 	bool			full;
 	t_mtx			*left_fork;
 	t_mtx			*right_fork;
@@ -104,8 +104,8 @@ void	print_status(t_philo *philo, t_status status);
 
 // input.c
 void	input_check(t_simulation *simulation, char **av);
+char	*ft_preatol(char *str);
 long	ft_atol(char *str);
-char	*parse_input(char *str);
 
 // data.c
 void	data_init(t_simulation *simulation);
@@ -118,9 +118,8 @@ bool	philo_died(t_philo *philo);
 
 // simulation0.c
 void	start_simulation(t_simulation *simulation);
-void	*dinner_routin(void *data);
+void	*dinner_routine(void *data);
 void	eat(t_philo *philo);
-bool	check_bool(t_mtx *mutex, bool *value);
 void	*unus_philosophus(void *arg);
 
 // simulation1.c

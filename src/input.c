@@ -6,7 +6,7 @@
 /*   By: mrusu <mrusu@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/13 10:20:43 by mrusu             #+#    #+#             */
-/*   Updated: 2024/06/13 10:26:38 by mrusu            ###   ########.fr       */
+/*   Updated: 2024/06/14 13:22:49 by mrusu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ long	ft_atol(char *str)
 	long	nbr;
 
 	nbr = 0;
-	str = parse_input(str);
+	str = ft_preatol(str);
 	while (*str >= '0' && *str <= '9')
 	{
 		nbr = (nbr * 10) + (*str - '0');
@@ -46,7 +46,7 @@ long	ft_atol(char *str)
 	return (nbr);
 }
 
-char	*parse_input(char *str)
+char	*ft_preatol(char *str)
 {
 	char	*nbr;
 	int		l;

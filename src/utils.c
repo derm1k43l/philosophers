@@ -6,7 +6,7 @@
 /*   By: mrusu <mrusu@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/13 10:24:37 by mrusu             #+#    #+#             */
-/*   Updated: 2024/06/14 10:40:42 by mrusu            ###   ########.fr       */
+/*   Updated: 2024/06/14 14:17:48 by mrusu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,8 +42,6 @@ long	ft_gettime(t_time code)
 		return ((now.tv_sec * 1e3) + (now.tv_usec / 1e3));
 	else if (code == MICROSECOND)
 		return ((now.tv_sec * 1e6) + now.tv_usec);
-	else
-		error_exit(R"Invalid time code."DEF);
 	return (1);
 }
 
@@ -86,14 +84,14 @@ void	print_status(t_philo *philo, t_status status)
 		return ;
 	}
 	if ((status == TAKE_RIGHT_FORK || status == TAKE_LEFT_FORK) && status_sim)
-		printf(W"%-6ld"DEF" %ld has taken a fork\n", elapsed, philo->id);
+		printf(W"%-6ld"DEF" %hhu has taken a fork\n", elapsed, philo->id);
 	else if (status == EATING && status_sim)
-		printf(W"%-6ld"B" %ld is eating\n"DEF, elapsed, philo->id);
+		printf(W"%-6ld"B" %hhu is eating\n"DEF, elapsed, philo->id);
 	else if (status == SLEEPING && status_sim)
-		printf(W"%-6ld"DEF" %ld is sleeping\n", elapsed, philo->id);
+		printf(W"%-6ld"DEF" %hhu is sleeping\n", elapsed, philo->id);
 	else if (status == THINKING && status_sim)
-		printf(W"%-6ld"DEF" %ld is thinking\n", elapsed, philo->id);
+		printf(W"%-6ld"DEF" %hhu is thinking\n", elapsed, philo->id);
 	else if (status == DIED && !status_sim)
-		printf(R"%-6ld %ld died\n", elapsed, philo->id);
+		printf(R"%-6ld %hhu died\n", elapsed, philo->id);
 	pthread_mutex_unlock(&philo->simulation->print_mtx);
 }
