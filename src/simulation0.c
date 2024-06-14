@@ -6,7 +6,7 @@
 /*   By: mrusu <mrusu@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/13 10:24:33 by mrusu             #+#    #+#             */
-/*   Updated: 2024/06/13 10:33:21 by mrusu            ###   ########.fr       */
+/*   Updated: 2024/06/14 10:30:33 by mrusu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ void	start_simulation(t_simulation *simulation)
 	}
 	pthread_create(&simulation->monitor, NULL, monitoring_dinner, simulation);
 	simulation->start_time = ft_gettime(MILLISECOND);
-	pthread_mutex_lock(&simulation->sim_mutex);
+	pthread_mutex_lock(&simulation->sim_mutex); //we lock it here to set to true, does this work?
 	simulation->sync_ready = true;
 	pthread_mutex_unlock(&simulation->sim_mutex);
 	i = -1;
@@ -49,16 +49,13 @@ void	eat(t_philo *philo)
 	pthread_mutex_lock(&philo->philo_mutex);
 	philo->last_meal_time = ft_gettime(MILLISECOND);
 	philo->meals_index++;
-	pthread_mutex_unlock(&philo->philo_mutex);
-	print_status(philo, EATING);
-	printf("philo %ld meals_index: %ld, limit_meals: %ld\n", philo->id, philo->meals_index, philo->simulation->limit_meals);
-	if (philo->simulation->limit_meals > 0 && philo->meals_index == philo->simulation->limit_meals)
+	if (philo->meals_index == philo->simulation->limit_meals)
 	{
-		pthread_mutex_lock(&philo->philo_mutex);
 		philo->full = true;
-		pthread_mutex_unlock(&philo->philo_mutex);
 		printf("Philosopher %ld is now full.\n", philo->id);
 	}
+	pthread_mutex_unlock(&philo->philo_mutex);
+	print_status(philo, EATING);
 	ft_usleep(philo->simulation, philo->simulation->time_to_eat);
 	pthread_mutex_unlock(philo->right_fork);
 	pthread_mutex_unlock(philo->left_fork);
@@ -84,6 +81,9 @@ void	*dinner_routin(void *data)
         printf("philo %ld bool for full is %d\n", philo->id, philo->full);
         if (check_bool(&philo->philo_mutex, &philo->full))
         {
+	        pthread_mutex_unlock(&philo->philo_mutex);
+            pthread_mutex_unlock(philo->right_fork);
+            pthread_mutex_unlock(philo->left_fork);
             break ;
         }
         eat(philo);
@@ -94,12 +94,21 @@ void	*dinner_routin(void *data)
     return (NULL);
 }
 
-bool	check_bool(t_mtx *mutex, bool *value)
+void	*unus_philosophus(void *arg)
 {
-	bool	status;
+	t_philo	*philo;
 
-	pthread_mutex_lock(mutex);
-	status = *value;
-	pthread_mutex_unlock(mutex);
-	return (status);
+	philo = (t_philo *)arg;
+	wait_sync(philo->simulation);
+	philo->last_meal_time = ft_gettime(MILLISECOND);
+	philo->simulation->threads_running_nbr++;
+	print_status(philo, TAKE_RIGHT_FORK);
+	while (simulation_status(philo->simulation))
+	{
+		ft_usleep(philo->simulation, philo->simulation->time_to_die);
+		if (!simulation_status(philo->simulation))
+			break ;
+	}
+	return (NULL);
 }
+

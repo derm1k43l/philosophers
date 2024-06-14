@@ -6,7 +6,7 @@
 /*   By: mrusu <mrusu@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/13 10:24:35 by mrusu             #+#    #+#             */
-/*   Updated: 2024/06/13 10:36:20 by mrusu            ###   ########.fr       */
+/*   Updated: 2024/06/13 10:48:47 by mrusu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,23 +62,12 @@ bool	simulation_status(t_simulation *simulation)
 	pthread_mutex_unlock(&simulation->sim_mutex);
 	return (status);
 }
-
-void	*unus_philosophus(void *arg)
+bool	check_bool(t_mtx *mutex, bool *value)
 {
-	t_philo	*philo;
+	bool	status;
 
-	philo = (t_philo *)arg;
-	wait_sync(philo->simulation);
-	pthread_mutex_lock(&philo->simulation->sim_mutex);
-	philo->last_meal_time = ft_gettime(MILLISECOND);
-	philo->simulation->threads_running_nbr++;
-	pthread_mutex_unlock(&philo->simulation->sim_mutex);
-	print_status(philo, TAKE_RIGHT_FORK);
-	while (simulation_status(philo->simulation))
-	{
-		ft_usleep(philo->simulation, philo->simulation->time_to_die);
-		if (!simulation_status(philo->simulation))
-			break ;
-	}
-	return (NULL);
+	pthread_mutex_lock(mutex);
+	status = *value;
+	pthread_mutex_unlock(mutex);
+	return (status);
 }

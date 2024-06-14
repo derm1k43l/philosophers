@@ -6,7 +6,7 @@
 /*   By: mrusu <mrusu@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/13 09:47:35 by mrusu             #+#    #+#             */
-/*   Updated: 2024/06/13 09:47:59 by mrusu            ###   ########.fr       */
+/*   Updated: 2024/06/13 10:58:46 by mrusu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,7 +99,7 @@ void	*monitoring_dinner(void *data);
 void	*ft_malloc(size_t bytes);
 void	clean(t_simulation *simulation);
 long	ft_gettime(t_time code);
-void	ft_usleep(t_simulation *simulation, long u);
+void	ft_usleep(t_simulation *simulation, long usecond);
 void	print_status(t_philo *philo, t_status status);
 
 // input.c
@@ -116,20 +116,16 @@ void	assign_forks(t_philo *philo, t_mtx *forks);
 void	error_exit(const char *error);
 bool	philo_died(t_philo *philo);
 
-// set_get.c
-bool	simulation_status(t_simulation *simulation);
-void	ft_usleep(t_simulation *simulation, long usecond);
-bool	simulation_status(t_simulation *simulation);
-
 // simulation0.c
 void	start_simulation(t_simulation *simulation);
 void	*dinner_routin(void *data);
 void	eat(t_philo *philo);
 bool	check_bool(t_mtx *mutex, bool *value);
+void	*unus_philosophus(void *arg);
 
 // simulation1.c
 void	wait_sync(t_simulation *simulation);
 void	desync(t_philo *philo);
-void	*unus_philosophus(void *arg);
+bool	simulation_status(t_simulation *simulation);
 
 #endif

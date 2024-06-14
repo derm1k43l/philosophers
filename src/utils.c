@@ -6,7 +6,7 @@
 /*   By: mrusu <mrusu@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/13 10:24:37 by mrusu             #+#    #+#             */
-/*   Updated: 2024/06/13 10:37:04 by mrusu            ###   ########.fr       */
+/*   Updated: 2024/06/14 10:40:42 by mrusu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,10 @@ void	print_status(t_philo *philo, t_status status)
 	status_sim = simulation_status(philo->simulation);
 	pthread_mutex_lock(&philo->simulation->print_mtx);
 	if (philo->full)
+	{
+		pthread_mutex_unlock(&philo->simulation->print_mtx);
 		return ;
+	}
 	if ((status == TAKE_RIGHT_FORK || status == TAKE_LEFT_FORK) && status_sim)
 		printf(W"%-6ld"DEF" %ld has taken a fork\n", elapsed, philo->id);
 	else if (status == EATING && status_sim)
