@@ -2,3 +2,4 @@ obj/
 .vscode
 philo.dSYM
 .DS_Store
+Dockerfile

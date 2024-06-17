@@ -6,7 +6,7 @@
 /*   By: mrusu <mrusu@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/13 10:24:31 by mrusu             #+#    #+#             */
-/*   Updated: 2024/06/14 13:47:24 by mrusu            ###   ########.fr       */
+/*   Updated: 2024/06/17 16:46:48 by mrusu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,10 +18,9 @@ void	*monitoring_dinner(void *data)
 	t_simulation	*simulation;
 
 	simulation = (t_simulation *)data;
-	while (simulation->threads_running_nbr < simulation->philo_nbr)
-	{
+	while (!all_threads_active(&simulation->sim_mutex, \
+		&simulation->threads_running_nbr, simulation->philo_nbr))
 		ft_usleep(simulation, 1);
-	}
 	while (simulation_status(simulation))
 	{
 		i = -1;
@@ -33,8 +32,10 @@ void	*monitoring_dinner(void *data)
 				simulation->simulation_running = false;
 				pthread_mutex_unlock(&simulation->sim_mutex);
 				print_status(simulation->philosophers + i, DIED);
+				return (NULL);
 			}
 		}
+		pthread_mutex_unlock(&simulation->sim_mutex);
 	}
 	return (NULL);
 }

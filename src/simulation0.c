@@ -6,7 +6,7 @@
 /*   By: mrusu <mrusu@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/13 10:24:33 by mrusu             #+#    #+#             */
-/*   Updated: 2024/06/14 13:39:18 by mrusu            ###   ########.fr       */
+/*   Updated: 2024/06/17 16:59:41 by mrusu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,8 +56,8 @@ void	eat(t_philo *philo)
 	pthread_mutex_unlock(&philo->philo_mutex);
 	print_status(philo, EATING);
 	ft_usleep(philo->simulation, philo->simulation->time_to_eat);
-	pthread_mutex_unlock(philo->right_fork);
 	pthread_mutex_unlock(philo->left_fork);
+	pthread_mutex_unlock(philo->right_fork);
 }
 
 void	*dinner_routine(void *data)
@@ -68,8 +68,8 @@ void	*dinner_routine(void *data)
 	wait_sync(philo->simulation);
 	pthread_mutex_lock(&philo->philo_mutex);
 	philo->last_meal_time = ft_gettime(MILLISECOND);
-	philo->simulation->threads_running_nbr++;
 	pthread_mutex_unlock(&philo->philo_mutex);
+	increase_threads_running(philo->simulation);
 	if (philo->simulation->philo_nbr == 1)
 		return (unus_philosophus(data));
 	desync(philo);
@@ -77,8 +77,8 @@ void	*dinner_routine(void *data)
 	{
 		if (philo->full)
 		{
-			pthread_mutex_unlock(philo->right_fork);
 			pthread_mutex_unlock(philo->left_fork);
+			pthread_mutex_unlock(philo->right_fork);
 			break ;
 		}
 		eat(philo);
@@ -94,9 +94,7 @@ void	*unus_philosophus(void *arg)
 	t_philo	*philo;
 
 	philo = (t_philo *)arg;
-	wait_sync(philo->simulation);
 	philo->last_meal_time = ft_gettime(MILLISECOND);
-	philo->simulation->threads_running_nbr++;
 	print_status(philo, TAKE_RIGHT_FORK);
 	while (simulation_status(philo->simulation))
 	{
@@ -105,4 +103,24 @@ void	*unus_philosophus(void *arg)
 			break ;
 	}
 	return (NULL);
+}
+
+bool	philo_died(t_philo *philo)
+{
+	long	elapsed;
+	long	t_to_die;
+
+	pthread_mutex_lock(&philo->philo_mutex);
+	if (philo->full)
+	{
+		pthread_mutex_unlock(&philo->philo_mutex);
+		return (false);
+	}
+	elapsed = ft_gettime(MILLISECOND) - philo->last_meal_time;
+	pthread_mutex_unlock(&philo->philo_mutex);
+	t_to_die = philo->simulation->time_to_die / 1e3;
+	if (elapsed > t_to_die)
+		return (true);
+	else
+		return (false);
 }

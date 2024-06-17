@@ -6,13 +6,12 @@
 #    By: mrusu <mrusu@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/06/13 09:21:56 by mrusu             #+#    #+#              #
-#    Updated: 2024/06/13 13:55:44 by mrusu            ###   ########.fr        #
+#    Updated: 2024/06/17 10:36:31 by mrusu            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-
 # COMPILER
-CC = cc
+CC = gcc
 
 # FLAGS FOR COMPILATION
 FLAGS = -Wall -Wextra -Werror -g -pthread #-Ofast -Wunreachable-code -fsanitize=address
@@ -29,8 +28,8 @@ NAME = philo
 HEADER = $(INC_DIR)/philo.h
 
 # LIST OF SOURCE FILES
-SRC = $(SRC_DIR)/main.c $(SRC_DIR)/utils.c $(SRC_DIR)/error.c $(SRC_DIR)/data.c $(SRC_DIR)/input.c \
-		$(SRC_DIR)/simulation0.c $(SRC_DIR)/simulation1.c
+SRC = $(SRC_DIR)/main.c $(SRC_DIR)/utils.c $(SRC_DIR)/simulation0.c $(SRC_DIR)/data.c $(SRC_DIR)/input.c \
+		$(SRC_DIR)/simulation1.c 
 OBJS = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRC))
 
 # COLORS

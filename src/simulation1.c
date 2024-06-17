@@ -6,7 +6,7 @@
 /*   By: mrusu <mrusu@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/13 10:24:35 by mrusu             #+#    #+#             */
-/*   Updated: 2024/06/14 13:48:23 by mrusu            ###   ########.fr       */
+/*   Updated: 2024/06/17 17:02:07 by mrusu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,4 +61,23 @@ bool	simulation_status(t_simulation *simulation)
 	status = simulation->simulation_running;
 	pthread_mutex_unlock(&simulation->sim_mutex);
 	return (status);
+}
+
+bool	all_threads_active(t_mtx *mtx, short *threads, short philo_nbr)
+{
+	bool	ret;
+
+	ret = false;
+	pthread_mutex_lock(mtx);
+	if (*threads == philo_nbr)
+		ret = true;
+	pthread_mutex_unlock(mtx);
+	return (ret);
+}
+
+void	increase_threads_running(t_simulation *simulation)
+{
+	pthread_mutex_lock(&simulation->sim_mutex);
+	simulation->threads_running_nbr++;
+	pthread_mutex_unlock(&simulation->sim_mutex);
 }

@@ -6,7 +6,7 @@
 /*   By: mrusu <mrusu@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/13 10:24:37 by mrusu             #+#    #+#             */
-/*   Updated: 2024/06/14 14:17:48 by mrusu            ###   ########.fr       */
+/*   Updated: 2024/06/17 14:35:11 by mrusu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,14 +18,22 @@ void	*ft_malloc(size_t bytes)
 
 	ret = malloc(bytes);
 	if (ret == NULL)
-		error_exit(R"Error with the memory allocation, try again."DEF);
+		error_exit(RED"Error with the memory allocation, try again."RESET);
 	return (ret);
 }
 
 void	clean(t_simulation *simulation)
 {
+	int	i;
+
+	i = -1;
 	pthread_mutex_destroy(&simulation->print_mtx);
 	pthread_mutex_destroy(&simulation->sim_mutex);
+	while (++i < simulation->philo_nbr)
+	{
+		pthread_mutex_destroy(&simulation->forks[i]);
+		pthread_mutex_destroy(&simulation->philosophers[i].philo_mutex);
+	}
 	free(simulation->forks);
 	free(simulation->philosophers);
 }
@@ -72,10 +80,10 @@ void	ft_usleep(t_simulation *simulation, long usecond)
 
 void	print_status(t_philo *philo, t_status status)
 {
-	long	elapsed;
+	long	timestamp;
 	bool	status_sim;
 
-	elapsed = ft_gettime(MILLISECOND) - philo->simulation->start_time;
+	timestamp = ft_gettime(MILLISECOND) - philo->simulation->start_time;
 	status_sim = simulation_status(philo->simulation);
 	pthread_mutex_lock(&philo->simulation->print_mtx);
 	if (philo->full)
@@ -84,14 +92,14 @@ void	print_status(t_philo *philo, t_status status)
 		return ;
 	}
 	if ((status == TAKE_RIGHT_FORK || status == TAKE_LEFT_FORK) && status_sim)
-		printf(W"%-6ld"DEF" %hhu has taken a fork\n", elapsed, philo->id);
+		printf("%-6ld %hd has taken a fork\n", timestamp, philo->id);
 	else if (status == EATING && status_sim)
-		printf(W"%-6ld"B" %hhu is eating\n"DEF, elapsed, philo->id);
+		printf("%-6ld %hd is eating\n", timestamp, philo->id);
 	else if (status == SLEEPING && status_sim)
-		printf(W"%-6ld"DEF" %hhu is sleeping\n", elapsed, philo->id);
+		printf("%-6ld %hd is sleeping\n", timestamp, philo->id);
 	else if (status == THINKING && status_sim)
-		printf(W"%-6ld"DEF" %hhu is thinking\n", elapsed, philo->id);
+		printf("%-6ld %hd is thinking\n", timestamp, philo->id);
 	else if (status == DIED && !status_sim)
-		printf(R"%-6ld %hhu died\n", elapsed, philo->id);
+		printf("%-6ld %hd died\n", timestamp, philo->id);
 	pthread_mutex_unlock(&philo->simulation->print_mtx);
 }
