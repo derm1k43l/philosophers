@@ -6,7 +6,7 @@
 /*   By: mrusu <mrusu@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/13 10:24:35 by mrusu             #+#    #+#             */
-/*   Updated: 2024/06/17 17:02:07 by mrusu            ###   ########.fr       */
+/*   Updated: 2024/06/18 14:49:00 by mrusu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ void	wait_sync(t_simulation *simulation)
 }
 
 // If the number of philosophers is even, 
-// desynchronize the even ID philosophers by 2e4/20ms
+// desynchronize the even ID philosophers by 20ms
 // If the number of philosophers is odd, calculate the thinking time
 // Desynchronize by sleeping for half of the calculated thinking time
 void	desync(t_philo *philo)
@@ -48,12 +48,12 @@ void	desync(t_philo *philo)
 			t_think = (t_eat * 2) - t_sleep;
 			if (t_think < 0)
 				t_think = 0;
-			ft_usleep(philo->simulation, t_think * 0.5);
+			ft_usleep(philo->simulation, t_think * 0.2);
 		}
 	}
 }
 
-bool	simulation_status(t_simulation *simulation)
+bool	get_simulation_status(t_simulation *simulation)
 {
 	bool	status;
 

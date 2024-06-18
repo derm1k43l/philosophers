@@ -6,7 +6,7 @@
 /*   By: mrusu <mrusu@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/13 10:24:37 by mrusu             #+#    #+#             */
-/*   Updated: 2024/06/17 14:35:11 by mrusu            ###   ########.fr       */
+/*   Updated: 2024/06/18 17:19:45 by mrusu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,8 +34,10 @@ void	clean(t_simulation *simulation)
 		pthread_mutex_destroy(&simulation->forks[i]);
 		pthread_mutex_destroy(&simulation->philosophers[i].philo_mutex);
 	}
-	free(simulation->forks);
-	free(simulation->philosophers);
+	if (simulation->forks)
+		free(simulation->forks);
+	if (simulation->philo_nbr)
+		free(simulation->philosophers);
 }
 
 long	ft_gettime(t_time code)
@@ -62,7 +64,7 @@ void	ft_usleep(t_simulation *simulation, long usecond)
 
 	start = ft_gettime(MICROSECOND);
 	rem = usecond;
-	while (rem > 0 && simulation_status(simulation))
+	while (rem > 0 && get_simulation_status(simulation))
 	{
 		elapsed = ft_gettime(MICROSECOND) - start;
 		rem = usecond - elapsed;
@@ -84,7 +86,7 @@ void	print_status(t_philo *philo, t_status status)
 	bool	status_sim;
 
 	timestamp = ft_gettime(MILLISECOND) - philo->simulation->start_time;
-	status_sim = simulation_status(philo->simulation);
+	status_sim = get_simulation_status(philo->simulation);
 	pthread_mutex_lock(&philo->simulation->print_mtx);
 	if (philo->full)
 	{

@@ -6,7 +6,7 @@
 /*   By: mrusu <mrusu@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/13 10:24:33 by mrusu             #+#    #+#             */
-/*   Updated: 2024/06/17 16:59:41 by mrusu            ###   ########.fr       */
+/*   Updated: 2024/06/18 14:13:18 by mrusu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,18 +26,16 @@ void	start_simulation(t_simulation *simulation)
 	}
 	pthread_create(&simulation->monitor, NULL, monitoring_dinner, simulation);
 	simulation->start_time = ft_gettime(MILLISECOND);
-	pthread_mutex_lock(&simulation->sim_mutex);
-	simulation->sync_ready = true;
-	pthread_mutex_unlock(&simulation->sim_mutex);
+	set_sync(simulation, true);
 	i = -1;
 	while (++i < simulation->philo_nbr)
 	{
 		pthread_join(simulation->philosophers[i].id_thread, NULL);
+		printf("Philosopher %d joined\n", i + 1); // Debug print
 	}
-	pthread_mutex_lock(&simulation->sim_mutex);
-	simulation->simulation_running = false;
-	pthread_mutex_unlock(&simulation->sim_mutex);
 	pthread_join(simulation->monitor, NULL);
+	printf("Monitor joined\n"); // Debug print
+	set_sync(simulation, false);
 }
 
 void	eat(t_philo *philo)
@@ -46,14 +44,8 @@ void	eat(t_philo *philo)
 	print_status(philo, TAKE_RIGHT_FORK);
 	pthread_mutex_lock(philo->left_fork);
 	print_status(philo, TAKE_LEFT_FORK);
-	pthread_mutex_lock(&philo->philo_mutex);
-	philo->last_meal_time = ft_gettime(MILLISECOND);
-	philo->meals_index++;
-	if (philo->meals_index == philo->simulation->limit_meals)
-	{
-		philo->full = true;
-	}
-	pthread_mutex_unlock(&philo->philo_mutex);
+	set_last_meal_time(philo, ft_gettime(MILLISECOND));
+	increment_meals_index(philo);
 	print_status(philo, EATING);
 	ft_usleep(philo->simulation, philo->simulation->time_to_eat);
 	pthread_mutex_unlock(philo->left_fork);
@@ -66,14 +58,12 @@ void	*dinner_routine(void *data)
 
 	philo = (t_philo *)data;
 	wait_sync(philo->simulation);
-	pthread_mutex_lock(&philo->philo_mutex);
-	philo->last_meal_time = ft_gettime(MILLISECOND);
-	pthread_mutex_unlock(&philo->philo_mutex);
+	set_last_meal_time(philo, ft_gettime(MILLISECOND));
 	increase_threads_running(philo->simulation);
 	if (philo->simulation->philo_nbr == 1)
 		return (unus_philosophus(data));
 	desync(philo);
-	while (simulation_status(philo->simulation))
+	while (get_simulation_status(philo->simulation))
 	{
 		if (philo->full)
 		{
@@ -94,12 +84,12 @@ void	*unus_philosophus(void *arg)
 	t_philo	*philo;
 
 	philo = (t_philo *)arg;
-	philo->last_meal_time = ft_gettime(MILLISECOND);
+	set_last_meal_time(philo, ft_gettime(MILLISECOND));
 	print_status(philo, TAKE_RIGHT_FORK);
-	while (simulation_status(philo->simulation))
+	while (get_simulation_status(philo->simulation))
 	{
 		ft_usleep(philo->simulation, philo->simulation->time_to_die);
-		if (!simulation_status(philo->simulation))
+		if (!get_simulation_status(philo->simulation))
 			break ;
 	}
 	return (NULL);
@@ -110,14 +100,10 @@ bool	philo_died(t_philo *philo)
 	long	elapsed;
 	long	t_to_die;
 
-	pthread_mutex_lock(&philo->philo_mutex);
-	if (philo->full)
-	{
-		pthread_mutex_unlock(&philo->philo_mutex);
+
+	if (is_philo_full(philo))
 		return (false);
-	}
 	elapsed = ft_gettime(MILLISECOND) - philo->last_meal_time;
-	pthread_mutex_unlock(&philo->philo_mutex);
 	t_to_die = philo->simulation->time_to_die / 1e3;
 	if (elapsed > t_to_die)
 		return (true);
