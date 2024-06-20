@@ -6,7 +6,7 @@
 /*   By: mrusu <mrusu@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/13 10:14:04 by mrusu             #+#    #+#             */
-/*   Updated: 2024/06/18 16:29:57 by mrusu            ###   ########.fr       */
+/*   Updated: 2024/06/20 12:25:39 by mrusu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,8 +47,6 @@ void	philo_init(t_simulation *simulation)
 		philo->simulation = simulation;
 		assign_forks(philo, simulation->forks);
 		pthread_mutex_init(&philo->philo_mutex, NULL);
-		// printf("Philosopher %d right_fork: %p, left_fork: %p\n", 
-        //     philo->id, (void *)philo->right_fork, (void *)philo->left_fork);
 	}
 }
 

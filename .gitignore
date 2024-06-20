@@ -3,3 +3,5 @@ obj/
 philo.dSYM
 .DS_Store
 Dockerfile
+no-die.txt
+yes-die.txt

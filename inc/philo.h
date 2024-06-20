@@ -6,7 +6,7 @@
 /*   By: mrusu <mrusu@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/13 09:47:35 by mrusu             #+#    #+#             */
-/*   Updated: 2024/06/18 14:38:37 by mrusu            ###   ########.fr       */
+/*   Updated: 2024/06/20 17:42:16 by mrusu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,11 +128,10 @@ bool	all_threads_active(t_mtx *mtx, short *threads, short philo_nbr);
 void	increase_threads_running(t_simulation *simulation);
 
 // helper_func.c
-void	set_simulation(t_simulation *simulation, bool status);
-void	set_sync(t_simulation *simulation, bool status);
 void	set_last_meal_time(t_philo *philo, long time);
 long	get_last_meal_time(t_philo *philo);
 void	increment_meals_index(t_philo *philo);
-bool	is_philo_full(t_philo *philo);
+bool	get_status(t_mtx *mutex, bool *status);
+void	set_status(t_mtx *mutex, bool *dst, bool status);
 
 #endif

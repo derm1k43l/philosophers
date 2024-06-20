@@ -6,12 +6,12 @@
 #    By: mrusu <mrusu@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/06/13 09:21:56 by mrusu             #+#    #+#              #
-#    Updated: 2024/06/18 12:18:14 by mrusu            ###   ########.fr        #
+#    Updated: 2024/06/20 11:59:29 by mrusu            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 # COMPILER
-CC = gcc
+CC = cc
 
 # FLAGS FOR COMPILATION
 FLAGS = -Wall -Wextra -Werror -g -pthread #-Ofast -Wunreachable-code -fsanitize=address
