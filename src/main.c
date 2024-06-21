@@ -6,7 +6,7 @@
 /*   By: mrusu <mrusu@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/13 10:24:31 by mrusu             #+#    #+#             */
-/*   Updated: 2024/06/20 17:52:22 by mrusu            ###   ########.fr       */
+/*   Updated: 2024/06/21 10:19:12 by mrusu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,15 +28,12 @@ void	*monitoring_dinner(void *data)
 		{
 			if (philo_died(simulation->philosophers + i))
 			{
-				set_status(&simulation->sim_mutex, &simulation->simulation_running, false);
-				printf("Philosopher %d died, ending simulation\n", i + 1);
-				printf("simualton bool %d\n", simulation->simulation_running);
+				set_status(&simulation->sim_mutex,
+					&simulation->simulation_running, false);
 				print_status(simulation->philosophers + i, DIED);
-				break ;
 			}
 		}
 	}
-	printf("Monitor thread exiting\n");
 	return (NULL);
 }
 
