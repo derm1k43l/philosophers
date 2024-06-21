@@ -6,16 +6,16 @@
 /*   By: mrusu <mrusu@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/13 10:20:43 by mrusu             #+#    #+#             */
-/*   Updated: 2024/06/21 13:48:27 by mrusu            ###   ########.fr       */
+/*   Updated: 2024/06/21 16:01:45 by mrusu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/philo.h"
 
-void	error_exit(const char *error)
+int	error_exit(const char *error)
 {
 	printf(RED "%s\n" RESET, error);
-	exit(EXIT_FAILURE);
+	return(1); // fix this
 }
 
 void	input_check(t_simulation *simulation, char **av)

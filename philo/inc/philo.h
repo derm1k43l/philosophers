@@ -6,7 +6,7 @@
 /*   By: mrusu <mrusu@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/13 09:47:35 by mrusu             #+#    #+#             */
-/*   Updated: 2024/06/21 14:10:01 by mrusu            ###   ########.fr       */
+/*   Updated: 2024/06/21 16:01:55 by mrusu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,7 +103,7 @@ void	ft_usleep(t_simulation *simulation, long usecond);
 void	print_status(t_philo *philo, t_status status);
 
 // input.c
-void	error_exit(const char *error);
+int		error_exit(const char *error);
 void	input_check(t_simulation *simulation, char **av);
 char	*ft_preatol(char *str);
 long	ft_atol(char *str);

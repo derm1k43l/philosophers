@@ -6,13 +6,13 @@
 /*   By: mrusu <mrusu@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/13 10:24:33 by mrusu             #+#    #+#             */
-/*   Updated: 2024/06/21 12:59:58 by mrusu            ###   ########.fr       */
+/*   Updated: 2024/06/21 16:01:34 by mrusu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/philo.h"
 
-void	start_simulation(t_simulation *simulation)
+void	start_simulation(t_simulation *simulation) //here add a struct for threats to get the i secure
 {
 	int	i;
 
