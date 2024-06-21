@@ -6,7 +6,7 @@
 /*   By: mrusu <mrusu@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/13 10:20:43 by mrusu             #+#    #+#             */
-/*   Updated: 2024/06/17 10:37:13 by mrusu            ###   ########.fr       */
+/*   Updated: 2024/06/21 13:48:27 by mrusu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,12 +23,12 @@ void	input_check(t_simulation *simulation, char **av)
 	simulation->philo_nbr = ft_atol(av[1]);
 	if (simulation->philo_nbr > 200)
 		error_exit(RED"Max philosophers is 200, get serious!"RESET);
-	simulation->time_to_eat = ft_atol(av[3]) * 1e3;
-	simulation->time_to_sleep = ft_atol(av[4]) * 1e3;
-	simulation->time_to_die = ft_atol(av[2]) * 1e3;
-	if (simulation->time_to_eat < 6e4
-		|| simulation->time_to_sleep < 6e4
-		|| simulation->time_to_die < 6e4)
+	simulation->time_to_eat = ft_atol(av[3]) * 1000;
+	simulation->time_to_sleep = ft_atol(av[4]) * 1000;
+	simulation->time_to_die = ft_atol(av[2]) * 1000;
+	if (simulation->time_to_eat < 60000
+		|| simulation->time_to_sleep < 60000
+		|| simulation->time_to_die < 60000)
 		error_exit("Use value for times above"GREEN" 60ms"RESET);
 	if (av[5])
 		simulation->limit_meals = ft_atol(av[5]);
