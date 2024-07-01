@@ -6,7 +6,7 @@
 /*   By: mrusu <mrusu@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/13 10:24:37 by mrusu             #+#    #+#             */
-/*   Updated: 2024/06/21 10:19:56 by mrusu            ###   ########.fr       */
+/*   Updated: 2024/06/28 15:42:48 by mrusu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,8 @@ void	*ft_malloc(size_t bytes)
 
 	ret = malloc(bytes);
 	if (ret == NULL)
-		error_exit(RED"Error with the memory allocation, try again."RESET);
+		printf(RED"Error with the memory \
+			allocation, try again."RESET);
 	return (ret);
 }
 
@@ -27,17 +28,20 @@ void	clean(t_simulation *simulation)
 	int	i;
 
 	i = -1;
+	if (simulation == NULL)
+		return ;
 	pthread_mutex_destroy(&simulation->print_mtx);
 	pthread_mutex_destroy(&simulation->sim_mutex);
-	while (++i < simulation->philo_nbr)
-	{
-		pthread_mutex_destroy(&simulation->forks[i]);
-		pthread_mutex_destroy(&simulation->philosophers[i].philo_mutex);
-	}
 	if (simulation->forks)
+	{
+		while (++i < simulation->philo_nbr)
+			pthread_mutex_destroy(&simulation->forks[i]);
 		free(simulation->forks);
-	if (simulation->philo_nbr)
+	}
+	if (simulation->philosophers)
+	{
 		free(simulation->philosophers);
+	}
 }
 
 long	ft_gettime(t_time code)
@@ -45,14 +49,15 @@ long	ft_gettime(t_time code)
 	struct timeval	now;
 
 	if (gettimeofday(&now, NULL))
-		error_exit("Could't get the system time.");
-	if (code == SECOND)
-		return (now.tv_sec);
-	else if (code == MILLISECOND)
+	{
+		printf("Could't get the system time.");
+		return (-1);
+	}
+	if (code == MILLISECOND)
 		return ((now.tv_sec * 1000) + (now.tv_usec / 1000));
 	else if (code == MICROSECOND)
 		return ((now.tv_sec * 1000000) + now.tv_usec);
-	return (1);
+	return (-1);
 }
 
 void	ft_usleep(t_simulation *simulation, long usecond)
@@ -69,8 +74,8 @@ void	ft_usleep(t_simulation *simulation, long usecond)
 	{
 		elapsed = ft_gettime(MICROSECOND) - start;
 		rem = usecond - elapsed;
-		if (rem > 1000)
-			sleep = 1000;
+		if (rem > 500)
+			sleep = 500;
 		else
 			sleep = rem;
 		if (sleep > 0)

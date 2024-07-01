@@ -6,7 +6,7 @@
 /*   By: mrusu <mrusu@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/13 09:47:35 by mrusu             #+#    #+#             */
-/*   Updated: 2024/06/21 16:01:55 by mrusu            ###   ########.fr       */
+/*   Updated: 2024/06/29 12:20:56 by mrusu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,6 @@ typedef enum e_status
 // code for time
 typedef enum e_time
 {
-	SECOND,
 	MILLISECOND,
 	MICROSECOND,
 }	t_time;
@@ -89,11 +88,12 @@ typedef struct s_philo
 	t_mtx			philo_mutex;
 	pthread_t		id_thread;
 	t_simulation	*simulation;
+	int				index;
 }	t_philo;
 
 // **********************====FUNCTION DECLARATION====*********************
 // main.c
-void	*monitoring_dinner(void *data);
+void	*monitor(void *data);
 
 // utils.c
 void	*ft_malloc(size_t bytes);
@@ -103,33 +103,35 @@ void	ft_usleep(t_simulation *simulation, long usecond);
 void	print_status(t_philo *philo, t_status status);
 
 // input.c
-int		error_exit(const char *error);
-void	input_check(t_simulation *simulation, char **av);
+int		error_clean(t_simulation *simulation, const char *error_msg);
+int		input_check(t_simulation *simulation, char **av);
 char	*ft_preatol(char *str);
 long	ft_atol(char *str);
 
 // data.c
-void	data_init(t_simulation *simulation);
-void	philo_init(t_simulation *simulation);
+int		data_init(t_simulation *simulation);
+int		philo_init(t_simulation *simulation);
 void	assign_forks(t_philo *philo, t_mtx *forks);
+void	forks_lock(t_philo *philo);
 
 // simulation0.c
-void	start_simulation(t_simulation *simulation);
+int		start_simulation(t_simulation *simulation);
 void	*dinner_routine(void *data);
 void	eat(t_philo *philo);
 void	*unus_philosophus(void *arg);
-bool	philo_died(t_philo *philo);
+int		create_threads(t_simulation *simulation, int *index);
 
 // simulation1.c
 void	wait_sync(t_simulation *simulation);
-void	desync(t_philo *philo);
 bool	all_threads_active(t_mtx *mtx, short *threads, short philo_nbr);
-void	increase_threads_running(t_simulation *simulation);
+bool	philo_died(t_philo *philo);
+bool	all_philos_full(t_simulation *simulation);
 
 // helper_func.c
-void	set_last_meal_time(t_philo *philo, long time);
+void	set_last_meal_time(t_philo *philo);
 long	get_last_meal_time(t_philo *philo);
 bool	get_status(t_mtx *mutex, bool *status);
 void	set_status(t_mtx *mutex, bool *dst, bool status);
+void	increase_threads_running(t_simulation *simulation);
 
 #endif

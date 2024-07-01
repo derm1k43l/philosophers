@@ -6,58 +6,66 @@
 /*   By: mrusu <mrusu@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/13 10:24:33 by mrusu             #+#    #+#             */
-/*   Updated: 2024/06/21 16:01:34 by mrusu            ###   ########.fr       */
+/*   Updated: 2024/06/29 13:14:21 by mrusu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/philo.h"
 
-void	start_simulation(t_simulation *simulation) //here add a struct for threats to get the i secure
+int	start_simulation(t_simulation *simulation)
 {
-	int	i;
+	int		*index;
+	int		i;
 
-	i = -1;
+	index = ft_malloc(simulation->philo_nbr * sizeof(int));
 	if (simulation->limit_meals == 0)
-		return ;
-	if (simulation->philo_nbr == 1)
-		pthread_create(&simulation->philosophers[0].id_thread,
-			NULL, unus_philosophus, &simulation->philosophers[0]);
-	else if (simulation->philo_nbr > 1)
 	{
-		while (++i < simulation->philo_nbr)
-		{
-			pthread_create(&simulation->philosophers[i].id_thread,
-				NULL, dinner_routine, &simulation->philosophers[i]);
-		}
+		free(index);
+		return (1);
 	}
-	pthread_create(&simulation->monitor, NULL, monitoring_dinner, simulation);
 	simulation->start_time = ft_gettime(MILLISECOND);
 	set_status(&simulation->sim_mutex, &simulation->sync_ready, true);
+	create_threads(simulation, index);
+	if (pthread_create(&simulation->monitor, NULL, monitor, simulation) != 0)
+		return (1);
 	i = -1;
 	while (++i < simulation->philo_nbr)
-		pthread_join(simulation->philosophers[i].id_thread, NULL);
+	{
+		if (pthread_join(simulation->philosophers[i].id_thread, NULL) != 0)
+			return (1);
+	}
 	set_status(&simulation->sim_mutex, &simulation->simulation_running, false);
-	pthread_join(simulation->monitor, NULL);
+	if (pthread_join(simulation->monitor, NULL) != 0)
+		return (1);
+	free(index);
+	return (0);
 }
 
-void	eat(t_philo *philo)
+int	create_threads(t_simulation *simulation, int *index)
 {
-	pthread_mutex_lock(philo->right_fork);
-	print_status(philo, TAKE_RIGHT_FORK);
-	pthread_mutex_lock(philo->left_fork);
-	print_status(philo, TAKE_LEFT_FORK);
-	set_last_meal_time(philo, ft_gettime(MILLISECOND));
-	philo->meals_index++;
-	print_status(philo, EATING);
-	if (philo->meals_index == philo->simulation->limit_meals)
+	int		i;
+
+	i = -1;
+	while (++i < simulation->philo_nbr)
 	{
-		pthread_mutex_lock(&philo->philo_mutex);
-		philo->full = true;
-		pthread_mutex_unlock(&philo->philo_mutex);
+		index[i] = i;
+		simulation->philosophers[i].id = i + 1;
+		if (simulation->philo_nbr == 1)
+		{
+			if (pthread_create(&simulation->philosophers[0].id_thread,
+					NULL, unus_philosophus, &simulation->philosophers[0]) != 0)
+				return (1);
+			break ;
+		}
+		else
+		{
+			if (pthread_create(&simulation->philosophers[i].id_thread,
+					NULL, dinner_routine,
+					&simulation->philosophers[index[i]]) != 0)
+				return (1);
+		}
 	}
-	ft_usleep(philo->simulation, philo->simulation->time_to_eat);
-	pthread_mutex_unlock(philo->left_fork);
-	pthread_mutex_unlock(philo->right_fork);
+	return (0);
 }
 
 void	*dinner_routine(void *data)
@@ -66,14 +74,14 @@ void	*dinner_routine(void *data)
 
 	philo = (t_philo *)data;
 	wait_sync(philo->simulation);
-	set_last_meal_time(philo, ft_gettime(MILLISECOND));
+	set_last_meal_time(philo);
 	increase_threads_running(philo->simulation);
-	desync(philo);
+	print_status(philo, THINKING);
 	while (get_status(&philo->simulation->sim_mutex,
 			&philo->simulation->simulation_running))
 	{
 		if (get_status(&philo->philo_mutex, &philo->full))
-			break ;
+			return (NULL);
 		eat(philo);
 		print_status(philo, SLEEPING);
 		ft_usleep(philo->simulation, philo->simulation->time_to_sleep);
@@ -82,12 +90,30 @@ void	*dinner_routine(void *data)
 	return (NULL);
 }
 
+void	eat(t_philo *philo)
+{
+	if (!get_status(&philo->simulation->sim_mutex,
+			&philo->simulation->simulation_running))
+		return ;
+	forks_lock(philo);
+	print_status(philo, EATING);
+	pthread_mutex_lock(&philo->philo_mutex);
+	philo->meals_index++;
+	if (philo->meals_index == philo->simulation->limit_meals)
+		philo->full = true;
+	pthread_mutex_unlock(&philo->philo_mutex);
+	set_last_meal_time(philo);
+	ft_usleep(philo->simulation, philo->simulation->time_to_eat);
+	pthread_mutex_unlock(philo->left_fork);
+	pthread_mutex_unlock(philo->right_fork);
+}
+
 void	*unus_philosophus(void *arg)
 {
 	t_philo	*philo;
 
 	philo = (t_philo *)arg;
-	set_last_meal_time(philo, ft_gettime(MILLISECOND));
+	set_last_meal_time(philo);
 	print_status(philo, TAKE_RIGHT_FORK);
 	increase_threads_running(philo->simulation);
 	pthread_mutex_lock(&philo->simulation->sim_mutex);
@@ -99,19 +125,4 @@ void	*unus_philosophus(void *arg)
 		ft_usleep(philo->simulation, philo->simulation->time_to_die);
 	}
 	return (NULL);
-}
-
-bool	philo_died(t_philo *philo)
-{
-	long	elapsed;
-	long	t_to_die;
-
-	if (get_status(&philo->philo_mutex, &philo->full))
-		return (false);
-	elapsed = ft_gettime(MILLISECOND) - get_last_meal_time(philo);
-	t_to_die = philo->simulation->time_to_die / 1000;
-	if (elapsed > t_to_die)
-		return (true);
-	else
-		return (false);
 }
